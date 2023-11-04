@@ -1,0 +1,13 @@
+[Unit]
+Description=Update of articles
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=jpazio
+Restart=always
+RestartSec=1800s
+ExecStart=/usr/bin/newsUpdate
+StandardOutput=journal
+StandardError=journal

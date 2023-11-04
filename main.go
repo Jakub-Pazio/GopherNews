@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -26,40 +27,42 @@ func main() {
 	}()
 
 	coll := db.Database("test").Collection("articles")
-	lang := "Go"
 
-	var result bson.M
-	err = coll.FindOne(ctx, bson.M{"lang": lang}).Decode(&result)
-	if err != nil {
-		panic(err)
+	indexArticle := mongo.IndexModel{
+		Keys: bson.D{primitive.E{Key: "url", Value: 1},{Key: "keyword", Value: -1}},
+		Options: options.Index().SetUnique(true),
 	}
-	jsonData, err := bson.MarshalExtJSON(result, false, false)
+	index, err := coll.Indexes().CreateOne(ctx, indexArticle)
 	if err != nil {
-		panic(err)
+		fmt.Printf("Error creating index: %s\n", err)
+	} else {
+		fmt.Println(index)
 	}
-	fmt.Println(string(jsonData))
 
 	//test
 	articles := getArticles(500)
 	for _, article := range articles {
-		for i, lang := range languages {
-			if customContains(article.name, languages[i]) {
-				fmt.Printf("%s: %s -> %s\n", lang, article.name, article.url)
-			}
+		fmt.Printf("%s: %s -> %s\n", article.Keyword, article.Name, article.URL)
+		result, err := coll.InsertOne(ctx, article)
+		if err != nil {
+			fmt.Printf("Error inserting document: %s\n", err)
+			fmt.Println("Article may already exist")
 		}
+		fmt.Println(result)
 	}
 }
 
-type article struct {
-	url  string
-	name string
+type Article struct {
+	URL     string `bson:"url"`
+	Name    string `bson:"name"`
+	Keyword string `bson:"keyword"`
 }
 
 // Returns array of articles, article might be empty
-func getArticles(number int) []article {
-	articles := make([]article, number)
+func getArticles(number int) []Article {
+	articles := make([]Article, 0)
 	// Call my program end extract the data
-	cmd := exec.Command("hackns", "--no-input", "--number", fmt.Sprintf("%d", number))
+	cmd := exec.Command("/usr/bin/hackns", "--no-input", "--number", fmt.Sprintf("%d", number))
 	out, err := cmd.Output()
 	if err != nil {
 		fmt.Println(err)
@@ -67,12 +70,16 @@ func getArticles(number int) []article {
 	}
 	// Parse the data
 	// println(string(out))
-	for n, line := range strings.Split(string(out), "\n") {
+	for _, line := range strings.Split(string(out), "\n") {
 		article_url := strings.Split(line, "~")
 		if len(article_url) != 2 {
 			continue
 		}
-		articles[n] = article{article_url[1], article_url[0]}
+		for _, lang := range languages {
+			if customContains(article_url[0], lang) {
+				articles = append(articles, Article{URL: article_url[1], Name: article_url[0], Keyword: lang})
+			}
+		}
 	}
 	return articles
 }
