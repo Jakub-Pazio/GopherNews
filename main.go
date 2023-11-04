@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// refactor this to a config file, change name to keywords
 var languages = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig", "Java"}
 
 func main() {
@@ -57,6 +58,11 @@ type Article struct {
 	Name         string    `bson:"name"`
 	Keyword      string    `bson:"keyword"`
 	CreationDate time.Time `bson:"creation_date"`
+	Read         bool      `bson:"read"`
+}
+
+func newArticle(url string, name string, keyword string) Article {
+	return Article{URL: url, Name: name, Keyword: keyword, CreationDate: time.Now(), Read: false}
 }
 
 // Returns array of articles, article might be empty
@@ -81,7 +87,7 @@ func getArticles(number int) []Article {
 		}
 		for _, lang := range languages {
 			if customContains(article_url[0], lang) {
-				articles = append(articles, Article{URL: article_url[1], Name: article_url[0], Keyword: lang, CreationDate: time.Now()})
+				articles = append(articles, newArticle(article_url[1], article_url[0], lang))
 			}
 		}
 	}
