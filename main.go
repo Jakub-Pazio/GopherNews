@@ -29,7 +29,7 @@ func main() {
 	coll := db.Database("test").Collection("articles")
 
 	indexArticle := mongo.IndexModel{
-		Keys: bson.D{primitive.E{Key: "url", Value: 1},{Key: "keyword", Value: -1}},
+		Keys:    bson.D{primitive.E{Key: "url", Value: 1}, {Key: "keyword", Value: -1}},
 		Options: options.Index().SetUnique(true),
 	}
 	index, err := coll.Indexes().CreateOne(ctx, indexArticle)
@@ -53,9 +53,10 @@ func main() {
 }
 
 type Article struct {
-	URL     string `bson:"url"`
-	Name    string `bson:"name"`
-	Keyword string `bson:"keyword"`
+	URL          string    `bson:"url"`
+	Name         string    `bson:"name"`
+	Keyword      string    `bson:"keyword"`
+	CreationDate time.Time `bson:"creation_date"`
 }
 
 // Returns array of articles, article might be empty
@@ -72,12 +73,15 @@ func getArticles(number int) []Article {
 	// println(string(out))
 	for _, line := range strings.Split(string(out), "\n") {
 		article_url := strings.Split(line, "~")
+		for i, s := range article_url {
+			article_url[i] = strings.TrimSpace(s)
+		}
 		if len(article_url) != 2 {
 			continue
 		}
 		for _, lang := range languages {
 			if customContains(article_url[0], lang) {
-				articles = append(articles, Article{URL: article_url[1], Name: article_url[0], Keyword: lang})
+				articles = append(articles, Article{URL: article_url[1], Name: article_url[0], Keyword: lang, CreationDate: time.Now()})
 			}
 		}
 	}
