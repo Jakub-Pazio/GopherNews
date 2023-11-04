@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var languages = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig"}
+var languages = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig", "Java"}
 
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
