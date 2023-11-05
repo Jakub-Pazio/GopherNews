@@ -13,7 +13,7 @@ import (
 )
 
 // refactor this to a config file
-var keywords = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig", "Java", "Haskell", "C++", "Python", "htmx"}
+var keywords = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig", "Java", "Haskell", "C++", "Python", "htmx", "Linux"}
 
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	//test
-	articles := articles.GetArticles(500, languages)
+	articles := articles.GetArticles(500, keywords)
 	for _, article := range articles {
 		fmt.Printf("%s: %s -> %s\n", article.Keyword, article.Name, article.URL)
 		result, err := coll.InsertOne(ctx, article)

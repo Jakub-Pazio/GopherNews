@@ -5,13 +5,34 @@ import (
 )
 
 func TestStrictContains(t *testing.T) {
-	t.Run("strict contains positive", func(t *testing.T) {
-		if !StrictContains("Learn C++", "C++") {
-			t.Error("strictContains(\"Learn C++\", \"C++\") should be true")
-		}
-
-		if !StrictContains("Learn C++ and more", "C++") {
-			t.Error("strictContains(\"Learn C++ and more\", \"C++\") should be true")
-		}
-	})
+	var positiveTests = []struct {
+		articleName string
+		key  string
+	}{
+			{"Learn C++", "C++"},
+			{"C++ and more", "C++"},
+	}
+	var negativeTests = []struct {
+		articleName string
+		key  string
+	}{
+			{"Learn C", "C++"},
+			{"Is Glo bad?", "Go"},
+	}
+	for _, test := range positiveTests {
+		testName := test.articleName + " contains " + test.key
+		t.Run(testName, func(t *testing.T) {
+			if !StrictContains(test.articleName, test.key) {
+				t.Errorf("strictContains(\"%s\", \"%s\") should be true", test.articleName, test.key)
+			}
+		})
+	}
+	for _, test := range negativeTests {
+		testName := test.articleName + " does not contain " + test.key
+		t.Run(testName, func(t *testing.T) {
+			if StrictContains(test.articleName, test.key) {
+				t.Errorf("strictContains(\"%s\", \"%s\") should be false", test.articleName, test.key)
+			}
+		})
+	}
 }
