@@ -1,0 +1,4 @@
+.article-button:hover {
+  background-color: red;
+  cursor: pointer;
+}

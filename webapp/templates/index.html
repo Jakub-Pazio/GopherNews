@@ -5,11 +5,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/htmx/html.min.js"></script>
-        <link href="css/style.css" rel="stylesheet">
+        <link href="/css/style.css" rel="stylesheet">
     </head>
     <body>
         <h1>Hello in my server</h1>
-        <div hx-get="/articles">
+        <div class="article-button" hx-get="/articles" hx-swap="outerHTML">
             Get articles!
         </div>
     </body>
