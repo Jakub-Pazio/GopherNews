@@ -1,0 +1,11 @@
+{{define "articles"}}
+{{range .}}
+    <h3>Article</h3>
+    <p>URL: {{.URL}}</p>
+    <p>Name: {{.Name}}</p>
+    <p>Keyword: {{.Keyword}}</p>
+    <p>Creation Date: {{.CreationDate}}</p>
+    <p>Read: {{.Read}}</p>
+    <br>
+{{end}}
+{{end}}
