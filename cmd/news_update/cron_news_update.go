@@ -12,8 +12,8 @@ import (
 	"gopher_news/internal/articles"
 )
 
-// refactor this to a config file, change name to keywords
-var languages = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig", "Java", "Haskell", "C++"}
+// refactor this to a config file
+var keywords = []string{"Go", "Rust", "Elixir", "TypeScript", "Ocaml", "Zig", "Java", "Haskell", "C++", "Python", "htmx"}
 
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

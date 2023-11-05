@@ -5,7 +5,6 @@ import (
     "os/exec"
     "strings"
     "fmt"
-    "regexp"
 )
 
 type Article struct {
@@ -41,18 +40,18 @@ func GetArticles(number int, languages []string) []Article {
 			continue
 		}
 		for _, lang := range languages {
-			if strictContains(article_url[0], lang) {
+			if StrictContains(article_url[0], lang) {
 				articles = append(articles, NewArticle(article_url[1], article_url[0], lang))
 			}
 		}
 	}
+	println(len(articles))
 	return articles
 }
 
-func strictContains(s, substr string) bool {
-	// Create a regex pattern to match the word with whitespace or string boundaries.
-	pattern := "\\b" + regexp.QuoteMeta(substr) + "\\b"
-	re := regexp.MustCompile(pattern)
-	return re.MatchString(s)
+func StrictContains(s, substr string) bool {
+	// Regex is stupid, but one day i will need to implement ...
+	// For example i dont want to match "Go" with "Google"
+	return strings.Contains(s, substr)
 }
 
