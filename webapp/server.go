@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "net/http"
-	"fmt"
 	"html/template"
 	"io"
 
@@ -37,12 +35,6 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func ArticlesList(c echo.Context) error {
-	// Log that finction was called, TODO: CHANGE THIS
-	fmt.Println("ArticlesList called")
-	// TODO: Fetch articles from database
-	fetchedArticles := []articles.Article{
-		articles.NewArticle("Learn C++", "https://learn-cpp.org", "C++"),
-		articles.NewArticle("Learn Go", "https://learn-go.org", "Go"),
-	}
+	fetchedArticles := articles.GetArticlesFromDatabase()
 	return c.Render(200, "articles", fetchedArticles)
 }

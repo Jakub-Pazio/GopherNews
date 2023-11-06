@@ -1,10 +1,15 @@
 package articles
 
 import (
-    "time"
-    "os/exec"
-    "strings"
-    "fmt"
+	"context"
+	"fmt"
+	"os/exec"
+	"strings"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Article struct {
@@ -49,9 +54,39 @@ func GetArticles(number int, languages []string) []Article {
 	return articles
 }
 
+func GetArticlesFromDatabase() []Article {
+	articleList := make([]Article, 0)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	db, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://root:root@localhost:27017"))
+	defer func() {
+		if err = db.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	coll := db.Database("test").Collection("articles")
+	cur, err := coll.Find(ctx, bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		var article Article
+		err := cur.Decode(&article)
+		if err != nil {
+			panic(err)
+		}
+		articleList = append(articleList, article)
+	}
+	if err := cur.Err(); err != nil {
+		panic(err)
+	}
+	return articleList
+}
+
 func StrictContains(s, substr string) bool {
 	// Regex is stupid, but one day i will need to implement ...
 	// For example i dont want to match "Go" with "Google"
 	return strings.Contains(s, substr)
 }
-

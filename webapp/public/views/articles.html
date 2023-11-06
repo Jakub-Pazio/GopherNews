@@ -1,11 +1,12 @@
 {{define "articles"}}
-{{range .}}
-    <h3>Article</h3>
-    <p>URL: {{.URL}}</p>
-    <p>Name: {{.Name}}</p>
-    <p>Keyword: {{.Keyword}}</p>
-    <p>Creation Date: {{.CreationDate}}</p>
-    <p>Read: {{.Read}}</p>
-    <br>
+{{range $index, $article := .}}
+    <h3>Article {{$index}}</h3>
+    <p>URL: <a href={{$article.URL}} target="_blank">
+            {{$article.URL}}
+            </a>
+    </p>
+    <p>Name: {{$article.Name}}</p>
+    <p>Keyword: {{$article.Keyword}}</p>
+    <hr style="border: 1px solid black;">
 {{end}}
 {{end}}
