@@ -1,3 +1,20 @@
+body {
+  background-color: #333;
+  color: #fff;
+}
+
+a {
+  color: #fff;
+}
+
+a:visited {
+  color: #ccc;
+}
+
+a:hover {
+  color: #fcc;
+}
+
 .article-button:hover {
   background-color: red;
   cursor: pointer;

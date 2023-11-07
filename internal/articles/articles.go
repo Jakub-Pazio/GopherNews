@@ -2,6 +2,7 @@ package articles
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -24,35 +25,39 @@ func NewArticle(url string, name string, keyword string) Article {
 	return Article{URL: url, Name: name, Keyword: keyword, CreationDate: time.Now(), Read: false}
 }
 
-// Returns array of articles, article might be empty
 func GetArticles(number int, languages []string) []Article {
 	articles := make([]Article, 0)
-	// Call my program end extract the data
-	cmd := exec.Command("/usr/bin/hackns", "--no-input", "--number", fmt.Sprintf("%d", number))
+	// Call my program and extract the data
+	cmd := exec.Command("/usr/bin/hackns", "--json", "--number", fmt.Sprintf("%d", number))
 	out, err := cmd.Output()
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	// Parse the data
-	// println(string(out))
-	for _, line := range strings.Split(string(out), "\n") {
-		article_url := strings.Split(line, "~")
-		for i, s := range article_url {
-			article_url[i] = strings.TrimSpace(s)
-		}
-		if len(article_url) != 2 {
-			continue
-		}
+
+	// Parse the data from an array of JSON objects
+	var articlesFromJSON []map[string]interface{}
+	if err := json.Unmarshal(out, &articlesFromJSON); err != nil {
+		panic(err)
+	}
+
+	// Iterate through the articles and extract the relevant data
+	for _, articleData := range articlesFromJSON {
+		articleURL := articleData["url"].(string)
+		articleTitle := articleData["title"].(string)
+
+		// Check if the article's title contains one of the specified languages
 		for _, lang := range languages {
-			if StrictContains(article_url[0], lang) {
-				articles = append(articles, NewArticle(article_url[1], article_url[0], lang))
+			if StrictContains(articleTitle, lang) {
+				articles = append(articles, NewArticle(articleURL, articleTitle, lang))
 			}
 		}
 	}
-	println(len(articles))
+
+	fmt.Printf("Total number of matching articles: %d\n", len(articles))
 	return articles
 }
+
 
 func GetArticlesFromDatabase() []Article {
 	articleList := make([]Article, 0)
