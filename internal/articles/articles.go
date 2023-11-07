@@ -71,7 +71,8 @@ func GetArticlesFromDatabase() []Article {
 	}()
 
 	coll := db.Database("test").Collection("articles")
-	cur, err := coll.Find(ctx, bson.D{})
+	opts := options.Find().SetSort(bson.D{{"creation_date", -1}})
+	cur, err := coll.Find(ctx, bson.D{}, opts)
 	if err != nil {
 		panic(err)
 	}
