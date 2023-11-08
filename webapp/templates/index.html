@@ -12,5 +12,9 @@
         <div class="article-button" hx-get="/articles" hx-swap="outerHTML">
             Get articles!
         </div>
+        <form hx-post="/articles" hx-swap="outerHTML" hx-trigger="submit">
+            <input type="text" name="keyword" placeholder="keyword">
+            <button type="submit">Get by KeyName!</button>
+        </form>
     </body>
 </html>

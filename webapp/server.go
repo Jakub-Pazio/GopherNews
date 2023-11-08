@@ -22,7 +22,8 @@ func main() {
 
 	// Later refactor to sever go templates filed with articles data
 	e.Renderer = t
-	e.GET("/articles", ArticlesList)
+	e.GET("/articles", articlesList)
+	e.POST("/articles", ArticlesKeywordList)
 	e.Logger.Fatal(e.Start(":9999"))
 }
 
@@ -34,7 +35,13 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func ArticlesList(c echo.Context) error {
+func articlesList(c echo.Context) error {
 	fetchedArticles := articles.GetArticlesFromDatabase()
+	return c.Render(200, "articles", fetchedArticles)
+}
+
+func ArticlesKeywordList(c echo.Context) error {
+	keyword := c.FormValue("keyword")
+	fetchedArticles := articles.GetArticlesFromDatabaseKeyword(keyword)
 	return c.Render(200, "articles", fetchedArticles)
 }
